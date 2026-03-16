@@ -1,0 +1,48 @@
+{
+  "name": "abdxdev-cn",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "start": "next start",
+    "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
+    "postinstall": "fumadocs-mdx",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "fumadocs-core": "16.6.17",
+    "fumadocs-mdx": "14.2.10",
+    "fumadocs-ui": "16.6.17",
+    "lucide-react": "^0.577.0",
+    "next": "16.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwind-merge": "^3.5.0",
+    "@takumi-rs/image-response": "^0.72.0",
+    "@openrouter/ai-sdk-provider": "^2.3.0",
+    "ai": "^6.0.116",
+    "zod": "^4.3.6",
+    "flexsearch": "^0.8.212",
+    "@ai-sdk/react": "^3.0.118",
+    "@radix-ui/react-presence": "^1.1.5",
+    "class-variance-authority": "^0.7.1",
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-rehype": "^11.1.2",
+    "hast-util-to-jsx-runtime": "^2.3.6",
+    "unist-util-visit": "^5.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.1",
+    "@types/mdx": "^2.0.13",
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^4.2.1",
+    "typescript": "^5.9.3",
+    "eslint-config-next": "16.1.6",
+    "eslint": "^10.0.3"
+  }
+}
