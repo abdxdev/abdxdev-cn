@@ -1,0 +1,83 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "abdxdev-cn",
+  "homepage": "https://abdxdev-cn.vercel.app",
+  "items": [
+    {
+      "name": "reveal-highlight-ts",
+      "title": "Reveal Highlight",
+      "description": "Windows 10 Fluent Design inspired reveal border glow that automatically detects bordered elements and applies a mouse-tracking radial glow effect.",
+      "type": "registry:component",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "type": "registry:file",
+          "path": "registry/default/reveal-highlight/ts/reveal-highlight.css",
+					"target": "components/reveal-highlight.css"
+        },
+        {
+          "type": "registry:component",
+          "path": "registry/default/reveal-highlight/ts/reveal-highlight.tsx"
+        }
+      ]
+    },
+    {
+      "name": "reveal-highlight-js",
+      "title": "Reveal Highlight",
+      "description": "Windows 10 Fluent Design inspired reveal border glow that automatically detects bordered elements and applies a mouse-tracking radial glow effect.",
+      "type": "registry:component",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "type": "registry:file",
+          "path": "registry/default/reveal-highlight/js/reveal-highlight.css",
+					"target": "components/reveal-highlight.css"
+        },
+        {
+          "type": "registry:component",
+          "path": "registry/default/reveal-highlight/js/reveal-highlight.jsx"
+        }
+      ]
+    },
+    {
+      "name": "shake-element-ts",
+      "title": "Shake Element",
+      "description": "A component that adds a shaking animation to its child elements.",
+      "type": "registry:component",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "type": "registry:file",
+          "path": "registry/default/shake-element/ts/shake-element.css",
+					"target": "components/shake-element.css"
+        },
+        {
+          "type": "registry:component",
+          "path": "registry/default/shake-element/ts/shake-element.tsx"
+        }
+      ]
+    },
+    {
+      "name": "shake-element-js",
+      "title": "Shake Element",
+      "description": "A component that adds a shaking animation to its child elements.",
+      "type": "registry:component",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "type": "registry:file",
+          "path": "registry/default/shake-element/js/shake-element.css",
+					"target": "components/shake-element.css"
+        },
+        {
+          "type": "registry:component",
+          "path": "registry/default/shake-element/js/shake-element.jsx"
+        }
+      ]
+    }
+  ]
+}

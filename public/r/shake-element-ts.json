@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "shake-element-ts",
+  "title": "Shake Element",
+  "description": "A component that adds a shaking animation to its child elements.",
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/default/shake-element/ts/shake-element.css",
+      "content": "@keyframes shake-x {\r\n  0% {\r\n    transform: translateX(0);\r\n  }\r\n  10% {\r\n    transform: translateX(-8px);\r\n  }\r\n  20% {\r\n    transform: translateX(8px);\r\n  }\r\n  30% {\r\n    transform: translateX(-8px);\r\n  }\r\n  40% {\r\n    transform: translateX(8px);\r\n  }\r\n  50% {\r\n    transform: translateX(-4px);\r\n  }\r\n  60% {\r\n    transform: translateX(4px);\r\n  }\r\n  70% {\r\n    transform: translateX(-2px);\r\n  }\r\n  80% {\r\n    transform: translateX(2px);\r\n  }\r\n  90% {\r\n    transform: translateX(-1px);\r\n  }\r\n  100% {\r\n    transform: translateX(0);\r\n  }\r\n}\r\n.shake {\r\n  animation: shake-x 0.4s ease-in-out both;\r\n}\r\n",
+      "type": "registry:file",
+      "target": "components/shake-element.css"
+    },
+    {
+      "path": "registry/default/shake-element/ts/shake-element.tsx",
+      "content": "'use client'\r\nimport { useImperativeHandle, useRef, HTMLAttributes, Ref } from 'react'\r\nimport './shake-element.css'\r\n\r\nexport interface ShakeHandle {\r\n  shake: () => void\r\n}\r\n\r\ninterface ShakeElementProps extends HTMLAttributes<HTMLDivElement> {\r\n  ref?: Ref<ShakeHandle>\r\n}\r\n\r\nexport function ShakeElement({ children, className, ref, ...props }: ShakeElementProps) {\r\n  const divRef = useRef<HTMLDivElement>(null)\r\n\r\n  useImperativeHandle(ref, () => ({\r\n    shake() {\r\n      const el = divRef.current\r\n      if (!el) return\r\n      el.classList.remove('shake')\r\n      void el.offsetWidth\r\n      el.classList.add('shake')\r\n      setTimeout(() => el.classList.remove('shake'), 400)\r\n    },\r\n  }))\r\n\r\n  return (\r\n    <>\r\n      <div ref={divRef} className={className} {...props}>\r\n        {children}\r\n      </div>\r\n    </>\r\n  )\r\n}",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

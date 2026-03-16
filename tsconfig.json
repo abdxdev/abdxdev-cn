@@ -39,7 +39,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-  ],
+, "registry/new-york/shake-element/js/shake-element.jsx"  ],
   "exclude": [
     "node_modules"
   ]
