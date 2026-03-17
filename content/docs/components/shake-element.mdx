@@ -2,3 +2,303 @@
 title: Shake Element
 description: A component that adds a shaking animation to its child elements, triggerable via an imperative ref handle.
 ---
+import { ShakeElementDemo } from '@/components/shake-element-demo';
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab value="Preview" className="p-0">
+    <ShakeElementDemo />
+  </Tab>
+  <Tab value="Code">
+```tsx
+"use client";
+
+import { useRef } from "react";
+import { ShakeElement, ShakeHandle } from "@/components/shake-element";
+
+export function ShakeElementDemo() {
+  const cardRef = useRef<ShakeHandle>(null);
+  const badgeRef = useRef<ShakeHandle>(null);
+  const buttonRef = useRef<ShakeHandle>(null);
+
+  return (
+    <div className="flex flex-col items-center gap-6 p-8">
+
+      {/* wrong password card */}
+      <ShakeElement ref={cardRef} className="w-full max-w-sm rounded-lg border p-5 space-y-3">
+        <p className="text-sm font-medium">Wrong password</p>
+        <p className="text-xs text-fd-muted-foreground">
+          Click the button to simulate a failed login shake.
+        </p>
+        <button
+          onClick={() => cardRef.current?.shake()}
+          className="w-full rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-fd-accent transition-colors"
+        >
+          Shake card
+        </button>
+      </ShakeElement>
+
+      <div className="flex items-center gap-4">
+        {/* badge */}
+        <ShakeElement ref={badgeRef}>
+          <span className="rounded-full border px-3 py-1 text-xs text-fd-muted-foreground cursor-pointer select-none">
+            badge
+          </span>
+        </ShakeElement>
+        <button
+          onClick={() => badgeRef.current?.shake()}
+          className="text-xs text-fd-muted-foreground underline underline-offset-2 hover:text-fd-foreground transition-colors"
+        >
+          shake badge
+        </button>
+
+        <div className="w-px h-4 bg-fd-border" />
+
+        {/* button shaking itself */}
+        <ShakeElement ref={buttonRef}>
+          <button
+            onClick={() => buttonRef.current?.shake()}
+            className="rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-fd-accent transition-colors"
+          >
+            Shake me
+          </button>
+        </ShakeElement>
+      </div>
+
+    </div>
+  );
+}
+```
+  </Tab>
+</Tabs>
+
+## Installation
+
+
+<CodeTabs defaultValue="command" className="mb-4">
+
+<TabsList variant="line" className="mb-4 p-0">
+  <TabsTrigger value="command">
+    <TerminalIcon />
+    Command
+  </TabsTrigger>
+  <TabsTrigger value="manual">
+    <FileCodeIcon />
+    Manual
+  </TabsTrigger>
+</TabsList>
+
+<CodeTabsContent value="command">
+
+<TS>
+```npm
+npx shadcn@latest add https://abdxdev-cn.vercel.app/r/shake-element-ts.json
+```
+</TS>
+<JS>
+```npm
+npx shadcn@latest add https://abdxdev-cn.vercel.app/r/shake-element-js.json
+```
+</JS>
+
+</CodeTabsContent>
+
+<CodeTabsContent value="manual">
+
+<Steps className="mb-0 pt-2">
+
+<Step>Copy and paste the following files into your project.</Step>
+
+<Tabs defaultValue="CSS" className="mb-4">
+<TabsList>
+  <TabsTrigger value="CSS">
+    <BsCss />
+    CSS
+  </TabsTrigger>
+  <TS>
+    <TabsTrigger value="TSX">
+      <BsTypescript />
+      TSX
+    </TabsTrigger>
+  </TS>
+  <JS>
+    <TabsTrigger value="JSX">
+      <BsJavascript />
+      JSX
+    </TabsTrigger>
+  </JS>
+</TabsList>
+
+<TabsContent value="CSS">
+```css title="components/shake-element.css"
+@keyframes shake-x {
+  0% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(-8px);
+  }
+  20% {
+    transform: translateX(8px);
+  }
+  30% {
+    transform: translateX(-8px);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  50% {
+    transform: translateX(-4px);
+  }
+  60% {
+    transform: translateX(4px);
+  }
+  70% {
+    transform: translateX(-2px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+  90% {
+    transform: translateX(-1px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.shake {
+  animation: shake-x 0.4s ease-in-out both;
+}
+```
+</TabsContent>
+<TS>
+<TabsContent value="TSX">
+```tsx title="components/shake-element.tsx"
+'use client'
+import { useImperativeHandle, useRef, HTMLAttributes, Ref } from 'react'
+import './shake-element.css'
+
+export interface ShakeHandle {
+  shake: () => void
+}
+
+interface ShakeElementProps extends HTMLAttributes<HTMLDivElement> {
+  ref?: Ref<ShakeHandle>
+}
+
+export function ShakeElement({ children, className, ref, ...props }: ShakeElementProps) {
+  const divRef = useRef<HTMLDivElement>(null)
+
+  useImperativeHandle(ref, () => ({
+    shake() {
+      const el = divRef.current
+      if (!el) return
+      el.classList.remove('shake')
+      void el.offsetWidth
+      el.classList.add('shake')
+      setTimeout(() => el.classList.remove('shake'), 400)
+    },
+  }))
+
+  return (
+    <>
+      <div ref={divRef} className={className} {...props}>
+        {children}
+      </div>
+    </>
+  )
+}
+```
+</TabsContent>
+</TS>
+
+<JS>
+<TabsContent value="JSX">
+```jsx title="components/shake-element.jsx"
+'use client'
+import { useImperativeHandle, useRef, HTMLAttributes, Ref } from 'react'
+import './shake-element.css'
+
+export function ShakeElement({ children, className, ref, ...props }) {
+  const divRef = useRef<HTMLDivElement>(null)
+
+  useImperativeHandle(ref, () => ({
+    shake() {
+      const el = divRef.current
+      if (!el) return
+      el.classList.remove('shake')
+      void el.offsetWidth
+      el.classList.add('shake')
+      setTimeout(() => el.classList.remove('shake'), 400)
+    },
+  }))
+
+  return (
+    <>
+      <div ref={divRef} className={className} {...props}>
+        {children}
+      </div>
+    </>
+  )
+}
+```
+</TabsContent>
+</JS>
+</Tabs>
+
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</CodeTabsContent>
+
+</CodeTabs>
+
+## Usage
+
+### Basic
+
+Wrap any element with `ShakeElement` and call `.shake()` via a ref:
+```tsx
+import { useRef } from "react";
+import { ShakeElement, ShakeHandle } from "@/components/shake-element";
+
+export default function Page() {
+  const ref = useRef<ShakeHandle>(null);
+
+  return (
+    <ShakeElement ref={ref} className="rounded-lg border p-4">
+      <button onClick={() => ref.current?.shake()}>
+        Shake me
+      </button>
+    </ShakeElement>
+  );
+}
+```
+
+### External Trigger
+
+The ref can be held by a parent and triggered from anywhere — useful for shaking a form on failed validation:
+```tsx
+const formRef = useRef<ShakeHandle>(null);
+
+function onSubmit() {
+  const valid = validate();
+  if (!valid) formRef.current?.shake();
+}
+
+return (
+  <>
+    <ShakeElement ref={formRef} className="rounded-lg border p-5">
+      {/* form fields */}
+    </ShakeElement>
+    <button onClick={onSubmit}>Submit</button>
+  </>
+);
+```
+
+**That's it.** Pass any `div` props — `className`, `style`, event handlers — directly to `ShakeElement`. The shake is triggered imperatively so it never conflicts with your own state.
+
+## API Reference
+
+<AutoTypeTable path="registry/default/shake-element/shake-element.tsx" name="ShakeHandle" />

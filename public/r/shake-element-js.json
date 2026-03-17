@@ -14,7 +14,7 @@
     },
     {
       "path": "registry/default/shake-element/shake-element.jsx",
-      "content": "'use client'\r\nimport { useImperativeHandle, useRef, HTMLAttributes, Ref } from 'react'\r\nimport './shake-element.css'\r\n\r\nexport interface ShakeHandle {\r\n  shake: () => void\r\n}\r\n\r\ninterface ShakeElementProps extends HTMLAttributes<HTMLDivElement> {\r\n  ref?: Ref<ShakeHandle>\r\n}\r\n\r\nexport function ShakeElement({ children, className, ref, ...props }: ShakeElementProps) {\r\n  const divRef = useRef<HTMLDivElement>(null)\r\n\r\n  useImperativeHandle(ref, () => ({\r\n    shake() {\r\n      const el = divRef.current\r\n      if (!el) return\r\n      el.classList.remove('shake')\r\n      void el.offsetWidth\r\n      el.classList.add('shake')\r\n      setTimeout(() => el.classList.remove('shake'), 400)\r\n    },\r\n  }))\r\n\r\n  return (\r\n    <>\r\n      <div ref={divRef} className={className} {...props}>\r\n        {children}\r\n      </div>\r\n    </>\r\n  )\r\n}",
+      "content": "'use client'\r\nimport { useImperativeHandle, useRef, HTMLAttributes, Ref } from 'react'\r\nimport './shake-element.css'\r\n\r\nexport function ShakeElement({ children, className, ref, ...props }) {\r\n  const divRef = useRef<HTMLDivElement>(null)\r\n\r\n  useImperativeHandle(ref, () => ({\r\n    shake() {\r\n      const el = divRef.current\r\n      if (!el) return\r\n      el.classList.remove('shake')\r\n      void el.offsetWidth\r\n      el.classList.add('shake')\r\n      setTimeout(() => el.classList.remove('shake'), 400)\r\n    },\r\n  }))\r\n\r\n  return (\r\n    <>\r\n      <div ref={divRef} className={className} {...props}>\r\n        {children}\r\n      </div>\r\n    </>\r\n  )\r\n}",
       "type": "registry:component"
     }
   ],

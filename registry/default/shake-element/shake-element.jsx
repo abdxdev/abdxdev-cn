@@ -2,15 +2,7 @@
 import { useImperativeHandle, useRef, HTMLAttributes, Ref } from 'react'
 import './shake-element.css'
 
-export interface ShakeHandle {
-  shake: () => void
-}
-
-interface ShakeElementProps extends HTMLAttributes<HTMLDivElement> {
-  ref?: Ref<ShakeHandle>
-}
-
-export function ShakeElement({ children, className, ref, ...props }: ShakeElementProps) {
+export function ShakeElement({ children, className, ref, ...props }) {
   const divRef = useRef<HTMLDivElement>(null)
 
   useImperativeHandle(ref, () => ({
