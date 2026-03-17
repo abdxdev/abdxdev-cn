@@ -1,21 +1,25 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import "./reveal-highlight.css";
 
-interface RevealHighlightContextValue {
+export interface RevealHighlightContextValue {
   enabled: boolean;
   intensity: number;
+  radius: number;
   setEnabled: (enabled: boolean) => void;
   setIntensity: (intensity: number) => void;
+  setRadius: (radius: number) => void;
   toggle: () => void;
 }
 
 const RevealHighlightContext = createContext<RevealHighlightContextValue>({
   enabled: true,
   intensity: 1,
+  radius: 200,
   setEnabled: () => { },
   setIntensity: () => { },
+  setRadius: () => { },
   toggle: () => { },
 });
 
@@ -49,6 +53,7 @@ function sync(el: Element, tracked: Set<HTMLElement>): boolean {
   const html = el as HTMLElement;
 
   if (!(t || r || b || l)) {
+    // console.log("Not tracked:", el.tagName, { w: cs.borderTopWidth, s: cs.borderTopStyle, c: cs.borderTopColor });
     if (tracked.has(html)) {
       el.removeAttribute(ATTR);
       if (html.style.position === "relative") html.style.removeProperty("position");
@@ -61,6 +66,7 @@ function sync(el: Element, tracked: Set<HTMLElement>): boolean {
     return false;
   }
 
+  // console.log("Tracked:", el.tagName);
   el.setAttribute(ATTR, t && r && b && l ? "full" : "partial");
   if (cs.position === "static") html.style.setProperty("position", "relative");
   html.style.setProperty("--reveal-pt", t ? "1px" : "0px");
@@ -81,30 +87,45 @@ export function RevealHighlightProvider({
   children,
   defaultEnabled = true,
   defaultIntensity = 1,
+  defaultRadius = 200,
 }: {
   children: React.ReactNode;
   defaultEnabled?: boolean;
   defaultIntensity?: number;
+  defaultRadius?: number;
 }) {
   const [enabled, setEnabled] = useState(defaultEnabled);
   const [intensity, setIntensityRaw] = useState(defaultIntensity);
+  const [radius, setRadiusRaw] = useState(defaultRadius);
   const setIntensity = useCallback((v: number) => setIntensityRaw(Math.max(0, Math.min(1, v))), []);
+  const setRadius = useCallback((v: number) => setRadiusRaw(Math.max(0, v)), []);
   const toggle = useCallback(() => setEnabled((v) => !v), []);
   const ctx = useMemo(
-    () => ({ enabled, intensity, setEnabled, setIntensity, toggle }),
-    [enabled, intensity, setIntensity, toggle],
+    () => ({ enabled, intensity, radius, setEnabled, setIntensity, setRadius, toggle }),
+    [enabled, intensity, radius, setIntensity, setRadius, toggle],
   );
 
+  const rootRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    document.documentElement.style.setProperty("--reveal-intensity", String(intensity));
-    return () => { document.documentElement.style.removeProperty("--reveal-intensity"); };
+    if (!rootRef.current) return;
+    rootRef.current.style.setProperty("--reveal-intensity", String(intensity));
+    return () => { rootRef.current?.style.removeProperty("--reveal-intensity"); };
   }, [intensity]);
 
   useEffect(() => {
+    if (!rootRef.current) return;
+    rootRef.current.style.setProperty("--reveal-radius", `${radius}px`);
+    return () => { rootRef.current?.style.removeProperty("--reveal-radius"); };
+  }, [radius]);
+
+  useEffect(() => {
+    if (!rootRef.current) return;
+    const root = rootRef.current;
     const tracked = new Set<HTMLElement>();
 
     const scanId = (globalThis.requestIdleCallback ?? setTimeout)(() =>
-      syncTree(document, tracked)
+      syncTree(root, tracked)
     );
 
     const obs = new MutationObserver((muts) => {
@@ -126,7 +147,7 @@ export function RevealHighlightProvider({
       }
     });
 
-    obs.observe(document.body, {
+    obs.observe(root, {
       childList: true,
       subtree: true,
       attributes: true,
@@ -141,18 +162,29 @@ export function RevealHighlightProvider({
   }, []);
 
   useEffect(() => {
+    if (!rootRef.current) return;
+    const root = rootRef.current;
+
     if (!enabled) {
-      document.querySelectorAll<HTMLElement>(`[${ATTR}]`).forEach((el) => {
+      root.querySelectorAll<HTMLElement>(`[${ATTR}]`).forEach((el) => {
         el.style.removeProperty("--mouse-x");
         el.style.removeProperty("--mouse-y");
       });
       return;
     }
 
-    const els = new Set(document.querySelectorAll<HTMLElement>(`[${ATTR}]`));
+    const els = new Set(root.querySelectorAll<HTMLElement>(`[${ATTR}]`));
 
     const obs = new MutationObserver((muts) => {
       for (const m of muts) {
+        if (m.type === "attributes") {
+          if (m.attributeName === ATTR) {
+            const el = m.target as HTMLElement;
+            if (el.hasAttribute(ATTR)) els.add(el);
+            else els.delete(el);
+          }
+          continue;
+        }
         if (m.type !== "childList") continue;
         m.addedNodes.forEach((n) => {
           if (n instanceof HTMLElement && n.hasAttribute(ATTR)) els.add(n);
@@ -164,7 +196,7 @@ export function RevealHighlightProvider({
         });
       }
     });
-    obs.observe(document.body, { childList: true, subtree: true });
+    obs.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: [ATTR] });
 
     let raf: number | null = null;
 
@@ -180,25 +212,29 @@ export function RevealHighlightProvider({
       });
     };
 
-    const onLeave = () => els.forEach((el) => {
-      el.style.removeProperty("--mouse-x");
-      el.style.removeProperty("--mouse-y");
-    });
+    const onLeave = () => {
+      els.forEach((el) => {
+        el.style.removeProperty("--mouse-x");
+        el.style.removeProperty("--mouse-y");
+      });
+    };
 
-    document.addEventListener("mousemove", onMove);
-    document.documentElement.addEventListener("mouseleave", onLeave);
+    root.addEventListener("mousemove", onMove);
+    root.addEventListener("mouseleave", onLeave);
 
     return () => {
       obs.disconnect();
-      document.removeEventListener("mousemove", onMove);
-      document.documentElement.removeEventListener("mouseleave", onLeave);
+      root.removeEventListener("mousemove", onMove);
+      root.removeEventListener("mouseleave", onLeave);
       if (raf !== null) cancelAnimationFrame(raf);
     };
   }, [enabled]);
 
   return (
     <RevealHighlightContext.Provider value={ctx}>
-      {children}
+      <div ref={rootRef} style={{ display: "contents" }}>
+        {children}
+      </div>
     </RevealHighlightContext.Provider>
   );
 }

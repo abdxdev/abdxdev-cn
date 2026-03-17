@@ -1,0 +1,196 @@
+---
+title: Reveal Highlight
+description: Windows 10 Fluent Design inspired reveal border glow that automatically detects bordered elements and applies a mouse-tracking radial glow effect.
+---
+import { RevealHighlightProvider } from "@/../registry/default/reveal-highlight/reveal-highlight";
+import { RevealHighlightPlayground } from '@/components/reveal-highlight-playground';
+import { RevealHighlightDemo } from '@/components/reveal-highlight-demo';
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab value="Preview" className="p-0">
+    <RevealHighlightProvider>
+      <RevealHighlightDemo />
+    </RevealHighlightProvider>
+  </Tab>
+  <Tab value="Code">
+```tsx
+<RevealHighlightProvider>
+  <div className="p-5 space-y-3">
+    {/* top row: two stat cards */}
+    <div className="grid grid-cols-2 gap-3">
+      <div className="rounded-lg border p-4 space-y-1">
+        <p className="text-xs text-fd-muted-foreground">Total Users</p>
+        <p className="text-xl font-semibold tabular-nums">12,483</p>
+        <p className="text-xs text-green-500">↑ 8.2% this month</p>
+      </div>
+      <div className="rounded-lg border p-4 space-y-1">
+        <p className="text-xs text-fd-muted-foreground">Uptime</p>
+        <p className="text-xl font-semibold tabular-nums">99.9%</p>
+        <p className="text-xs text-green-500">↑ all systems go</p>
+      </div>
+    </div>
+
+    {/* activity list — border-b on rows = partial borders */}
+    <div className="rounded-lg border px-4">
+      {[
+        { user: "kbd",   action: "merged pull request",   time: "2m ago",  dot: "bg-purple-400" },
+        { user: "mei",   action: "deployed to production", time: "18m ago", dot: "bg-green-400"  },
+        { user: "tariq", action: "opened an issue",        time: "1h ago",  dot: "bg-yellow-400" },
+      ].map((row, i, arr) => (
+        <div
+          key={row.user}
+          className={`flex items-center gap-3 py-2.5 ${i < arr.length - 1 ? "border-b" : ""}`}
+        >
+          <span className={`size-1.5 rounded-full shrink-0 ${row.dot}`} />
+          <span className="text-xs font-medium">{row.user}</span>
+          <span className="text-xs text-fd-muted-foreground flex-1">{row.action}</span>
+          <span className="text-[10px] text-fd-muted-foreground/50">{row.time}</span>
+        </div>
+      ))}
+    </div>
+
+    {/* pill tags */}
+    <div className="flex flex-wrap gap-2">
+      {["react", "tailwind", "motion", "ui", "a11y"].map((tag) => (
+        <span key={tag} className="rounded-full border px-3 py-0.5 text-xs text-fd-muted-foreground">
+          {tag}
+        </span>
+      ))}
+    </div>
+  </div>
+</RevealHighlightProvider>
+```
+  </Tab>
+</Tabs>
+
+## Installation
+
+
+<CodeTabs defaultValue="command" className="mb-4">
+
+<TabsList variant="line" className="mb-4 p-0">
+  <TabsTrigger value="command">
+    <TerminalIcon />
+    Command
+  </TabsTrigger>
+  <TabsTrigger value="manual">
+    <FileCodeIcon />
+    Manual
+  </TabsTrigger>
+</TabsList>
+
+<CodeTabsContent value="command">
+
+<TS>
+```npm
+npx shadcn@latest add https://abdxdev-cn.vercel.app/r/registry.json reveal-highlight-ts
+```
+</TS>
+<JS>
+```npm
+npx shadcn@latest add https://abdxdev-cn.vercel.app/r/registry.json reveal-highlight-js
+```
+</JS>
+
+</CodeTabsContent>
+
+<CodeTabsContent value="manual">
+
+<Steps className="mb-0 pt-2">
+
+<Step>Copy and paste the following files into your project.</Step>
+
+<Tabs defaultValue="CSS" className="mb-4">
+<TabsList>
+  <TabsTrigger value="CSS">
+    <BsCss />
+    CSS
+  </TabsTrigger>
+  <TS>
+    <TabsTrigger value="TSX">
+      <BsTypescript />
+      TSX
+    </TabsTrigger>
+  </TS>
+  <JS>
+    <TabsTrigger value="JSX">
+      <BsJavascript />
+      JSX
+    </TabsTrigger>
+  </JS>
+</TabsList>
+
+<TabsContent value="CSS">
+```css title="components/reveal-highlight.css"
+/* ... same CSS for both ... */
+```
+</TabsContent>
+<TS>
+<TabsContent value="TSX">
+```tsx title="components/reveal-highlight.tsx"
+"use client";
+// ... full TypeScript source
+```
+</TabsContent>
+</TS>
+
+<JS>
+<TabsContent value="JSX">
+```jsx title="components/reveal-highlight.jsx"
+"use client";
+// ... full JavaScript source (no types/interfaces)
+```
+</TabsContent>
+</JS>
+</Tabs>
+
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</CodeTabsContent>
+
+</CodeTabs>
+
+## Usage
+
+### Specific Section
+
+To use the Reveal Highlight, simply wrap your app (or part of it) with the `RevealHighlightProvider`:
+```tsx
+import { RevealHighlightProvider } from "@/components/reveal-highlight";
+
+export default function Page() {
+  return (
+    <RevealHighlightProvider>
+      <div className="border p-5" />
+    </RevealHighlightProvider>
+  );
+}
+```
+
+### Whole App
+
+For a global effect, wrap your entire app in the provider, such as in `layout.tsx`:
+```tsx
+import { RevealHighlightProvider } from "@/components/reveal-highlight";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <RevealHighlightProvider>
+      {children}
+    </RevealHighlightProvider>
+  );
+}
+```
+
+**That's it.** Every element with a visible CSS border automatically gets the glow. No extra props, no wrappers.
+
+## Playground
+
+<RevealHighlightPlayground />
+
+## API Reference
+
+<AutoTypeTable path="registry/default/reveal-highlight/reveal-highlight.tsx" name="RevealHighlightContextValue" />

@@ -1,0 +1,41 @@
+:root {
+  --reveal-intensity: 1;
+  --reveal-radius: 200px;
+}
+
+[data-reveal]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--reveal-pt) var(--reveal-pr) var(--reveal-pb) var(--reveal-pl);
+  background: radial-gradient(var(--reveal-radius) circle at var(--mouse-x) var(--mouse-y), rgba(0, 0, 0, calc(0.5 * var(--reveal-intensity))), transparent 100%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.dark [data-reveal]::before {
+  background: radial-gradient(var(--reveal-radius) circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, calc(0.5 * var(--reveal-intensity))), transparent 100%);
+}
+
+[data-reveal="full"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(var(--reveal-radius) circle at var(--mouse-x) var(--mouse-y), rgba(0, 0, 0, calc(0.03 * var(--reveal-intensity))), transparent 100%);
+  z-index: 2;
+}
+
+.dark [data-reveal="full"]::after {
+  background: radial-gradient(var(--reveal-radius) circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, calc(0.03 * var(--reveal-intensity))), transparent 100%);
+}

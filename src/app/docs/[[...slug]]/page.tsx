@@ -12,6 +12,7 @@ import { getMDXComponents } from '@/components/mdx';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { gitConfig } from '@/lib/layout.shared';
+import { LangSelector } from '@/components/lang-selector';
 
 export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   const params = await props.params;
@@ -30,6 +31,8 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
           markdownUrl={`${page.url}.mdx`}
           githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${page.path}`}
         />
+        <div className="ml-auto" />
+        <LangSelector />
       </div>
       <DocsBody>
         <MDX

@@ -13,12 +13,12 @@
       "files": [
         {
           "type": "registry:file",
-          "path": "registry/default/reveal-highlight/ts/reveal-highlight.css",
-					"target": "components/reveal-highlight.css"
+          "path": "registry/default/reveal-highlight/reveal-highlight.css",
+          "target": "components/reveal-highlight.css"
         },
         {
           "type": "registry:component",
-          "path": "registry/default/reveal-highlight/ts/reveal-highlight.tsx"
+          "path": "registry/default/reveal-highlight/reveal-highlight.tsx"
         }
       ]
     },
@@ -32,12 +32,12 @@
       "files": [
         {
           "type": "registry:file",
-          "path": "registry/default/reveal-highlight/js/reveal-highlight.css",
-					"target": "components/reveal-highlight.css"
+          "path": "registry/default/reveal-highlight/reveal-highlight.css",
+          "target": "components/reveal-highlight.css"
         },
         {
           "type": "registry:component",
-          "path": "registry/default/reveal-highlight/js/reveal-highlight.jsx"
+          "path": "registry/default/reveal-highlight/reveal-highlight.jsx"
         }
       ]
     },
@@ -51,12 +51,12 @@
       "files": [
         {
           "type": "registry:file",
-          "path": "registry/default/shake-element/ts/shake-element.css",
-					"target": "components/shake-element.css"
+          "path": "registry/default/shake-element/shake-element.css",
+          "target": "components/shake-element.css"
         },
         {
           "type": "registry:component",
-          "path": "registry/default/shake-element/ts/shake-element.tsx"
+          "path": "registry/default/shake-element/shake-element.tsx"
         }
       ]
     },
@@ -70,12 +70,12 @@
       "files": [
         {
           "type": "registry:file",
-          "path": "registry/default/shake-element/js/shake-element.css",
-					"target": "components/shake-element.css"
+          "path": "registry/default/shake-element/shake-element.css",
+          "target": "components/shake-element.css"
         },
         {
           "type": "registry:component",
-          "path": "registry/default/shake-element/js/shake-element.jsx"
+          "path": "registry/default/shake-element/shake-element.jsx"
         }
       ]
     }
