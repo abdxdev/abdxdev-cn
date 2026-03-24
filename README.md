@@ -1,6 +1,6 @@
 # abdxdev/cn
 
-![alt text](screenshots/screenshot_1.png)
+![alt text](https://github.com/abdxdev/abdxdev-cn/blob/main/screenshots/screenshot_1.png?raw=true)
 
 A personal collection of reusable components I've built and use across my projects. Not a framework, not a design system — just the stuff I kept copy-pasting.
 
