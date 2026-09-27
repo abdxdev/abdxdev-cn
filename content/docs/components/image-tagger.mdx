@@ -1,0 +1,333 @@
+---
+title: Image Tagger
+description: Mark points on an image with draggable labeled badges, so one photo can point at each of the options it shows.
+---
+import { ImageTaggerDemo } from '@/components/image-tagger-demo';
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab value="Preview" className="p-0">
+    <ImageTaggerDemo />
+  </Tab>
+  <Tab value="Code">
+```tsx
+import { useState } from "react";
+import { ImageTagger, type ImageTag } from "@/components/image-tagger";
+
+const INITIAL: ImageTag[] = [
+  { id: "circle", label: "Circle", x: null, y: null },
+  { id: "square", label: "Square", x: null, y: null },
+  { id: "triangle", label: "Triangle", x: null, y: null },
+];
+
+export function ImageTaggerDemo() {
+  const [tags, setTags] = useState<ImageTag[]>(INITIAL);
+
+  return (
+    <ImageTagger
+      src="/shape-variants.jpg"
+      alt="A circle, a square and a triangle"
+      tags={tags}
+      onTagsChange={setTags}
+      className="mx-auto max-w-md"
+    />
+  );
+}
+```
+  </Tab>
+</Tabs>
+
+## Installation
+
+<CodeTabs defaultValue="command" className="mb-4">
+
+<TabsList variant="line" className="mb-4 p-0">
+  <TabsTrigger value="command">
+    <TerminalIcon />
+    Command
+  </TabsTrigger>
+  <TabsTrigger value="manual">
+    <FileCodeIcon />
+    Manual
+  </TabsTrigger>
+</TabsList>
+
+<CodeTabsContent value="command">
+
+<TS>
+```npm
+npx shadcn@latest add https://abdxdev-cn.vercel.app/r/image-tagger-ts.json
+```
+</TS>
+<JS>
+```npm
+npx shadcn@latest add https://abdxdev-cn.vercel.app/r/image-tagger-js.json
+```
+</JS>
+
+</CodeTabsContent>
+
+<CodeTabsContent value="manual">
+
+<Steps className="mb-0 pt-2">
+
+<Step>Copy and paste the following file into your project.</Step>
+
+<Tabs defaultValue="TSX" className="mb-4">
+<TabsList>
+  <TS>
+    <TabsTrigger value="TSX">
+      <BsTypescript />
+      TSX
+    </TabsTrigger>
+  </TS>
+  <JS>
+    <TabsTrigger value="JSX">
+      <BsJavascript />
+      JSX
+    </TabsTrigger>
+  </JS>
+</TabsList>
+
+<TabsContent value="TSX">
+```tsx title="components/image-tagger.tsx"
+"use client";
+
+import { useState } from "react";
+import { X } from "lucide-react";
+
+export interface ImageTag {
+  /** stable id, used to keep the active badge and each badge apart */
+  id: string;
+  label: string;
+  /** 0–1 fractions of the image, so a tag survives any rendered size */
+  x: number | null;
+  y: number | null;
+}
+
+export interface ImageTaggerProps {
+  src: string;
+  alt?: string;
+  tags: ImageTag[];
+  onTagsChange: (tags: ImageTag[]) => void;
+  className?: string;
+}
+
+/** Pointer position inside `el` as 0..1 fractions, clamped and rounded. */
+function pointFromEvent(e: { clientX: number; clientY: number }, el: Element) {
+  const r = el.getBoundingClientRect();
+  const f = (v: number) => Math.min(1, Math.max(0, Math.round(v * 1000) / 1000));
+  return { x: f((e.clientX - r.left) / r.width), y: f((e.clientY - r.top) / r.height) };
+}
+
+/**
+ * Marks a point on an image with a labeled badge. Click the photo to move the
+ * active badge there, drag a badge to nudge it, × to remove one. Positions are
+ * stored as fractions of the image, so they hold at any size.
+ *
+ * Usually used on one photo that shows several options (a picture with both a
+ * circle and a square in it) — the badges tell the customer which is which.
+ */
+export function ImageTagger({ src, alt = "", tags, onTagsChange, className = "" }: ImageTaggerProps) {
+  const [activeId, setActiveId] = useState<string | null>(tags[0]?.id ?? null);
+  // the active badge, falling back to the first one when the picked id is gone
+  const active = tags.find((t) => t.id === activeId) ?? tags[0] ?? null;
+
+  const move = (id: string, p: { x: number; y: number }) =>
+    onTagsChange(tags.map((t) => (t.id === id ? { ...t, ...p } : t)));
+
+  return (
+    <div
+      className={`relative w-full cursor-crosshair select-none overflow-hidden rounded-lg border ${className}`}
+      onClick={(e) => {
+        if (!active) return;
+        move(active.id, pointFromEvent(e, e.currentTarget));
+        // Move on to the next badge that hasn't been placed yet.
+        const next = tags.find((t) => t.id !== active.id && t.x === null);
+        if (next) setActiveId(next.id);
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt={alt} className="h-auto w-full" draggable={false} />
+
+      {tags.map((tag) =>
+        tag.x === null || tag.y === null ? null : (
+          <span
+            key={tag.id}
+            className="absolute flex cursor-grab touch-none items-center gap-1 rounded-full border border-accent-foreground bg-accent py-1 pl-2.5 pr-1 text-accent-foreground shadow-sm active:cursor-grabbing"
+            style={{ left: `${tag.x * 100}%`, top: `${tag.y * 100}%`, transform: "translate(-50%, -50%)" }}
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              e.currentTarget.setPointerCapture(e.pointerId);
+              setActiveId(tag.id);
+            }}
+            onPointerMove={(e) => {
+              if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+              move(tag.id, pointFromEvent(e, e.currentTarget.parentElement!));
+            }}
+          >
+            <span className="text-xs font-semibold whitespace-nowrap sm:text-sm">{tag.label}</span>
+            <button
+              type="button"
+              aria-label={`Remove ${tag.label} tag`}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTagsChange(tags.filter((t) => t.id !== tag.id));
+              }}
+              className="flex size-4 items-center justify-center rounded-full opacity-60 transition-opacity hover:bg-accent-foreground/10 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+            >
+              <X className="size-3" />
+            </button>
+          </span>
+        ),
+      )}
+
+      {active && (
+        <p className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-foreground/80 px-2.5 py-1 text-xs text-background">
+          {active.x === null
+            ? `Click the photo to place ${active.label}`
+            : `Click to move ${active.label}`}
+        </p>
+      )}
+    </div>
+  );
+}
+```
+</TabsContent>
+<JS>
+<TabsContent value="JSX">
+```jsx title="components/image-tagger.jsx"
+"use client";
+
+import { useState } from "react";
+import { X } from "lucide-react";
+
+/** Pointer position inside `el` as 0..1 fractions, clamped and rounded. */
+function pointFromEvent(e, el) {
+  const r = el.getBoundingClientRect();
+  const f = (v) => Math.min(1, Math.max(0, Math.round(v * 1000) / 1000));
+  return { x: f((e.clientX - r.left) / r.width), y: f((e.clientY - r.top) / r.height) };
+}
+
+/**
+ * Marks a point on an image with a labeled badge. Click the photo to move the
+ * active badge there, drag a badge to nudge it, × to remove one. Positions are
+ * stored as fractions of the image, so they hold at any size.
+ *
+ * Usually used on one photo that shows several options (a picture with both a
+ * circle and a square in it) — the badges tell the customer which is which.
+ */
+export function ImageTagger({ src, alt = "", tags, onTagsChange, className = "" }) {
+  const [activeId, setActiveId] = useState(tags[0]?.id ?? null);
+  // the active badge, falling back to the first one when the picked id is gone
+  const active = tags.find((t) => t.id === activeId) ?? tags[0] ?? null;
+
+  const move = (id, p) => onTagsChange(tags.map((t) => (t.id === id ? { ...t, ...p } : t)));
+
+  return (
+    <div
+      className={`relative w-full cursor-crosshair select-none overflow-hidden rounded-lg border ${className}`}
+      onClick={(e) => {
+        if (!active) return;
+        move(active.id, pointFromEvent(e, e.currentTarget));
+        // Move on to the next badge that hasn't been placed yet.
+        const next = tags.find((t) => t.id !== active.id && t.x === null);
+        if (next) setActiveId(next.id);
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt={alt} className="h-auto w-full" draggable={false} />
+
+      {tags.map((tag) =>
+        tag.x === null || tag.y === null ? null : (
+          <span
+            key={tag.id}
+            className="absolute flex cursor-grab touch-none items-center gap-1 rounded-full border border-accent-foreground bg-accent py-1 pl-2.5 pr-1 text-accent-foreground shadow-sm active:cursor-grabbing"
+            style={{ left: `${tag.x * 100}%`, top: `${tag.y * 100}%`, transform: "translate(-50%, -50%)" }}
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              e.currentTarget.setPointerCapture(e.pointerId);
+              setActiveId(tag.id);
+            }}
+            onPointerMove={(e) => {
+              if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+              move(tag.id, pointFromEvent(e, e.currentTarget.parentElement));
+            }}
+          >
+            <span className="text-xs font-semibold whitespace-nowrap sm:text-sm">{tag.label}</span>
+            <button
+              type="button"
+              aria-label={`Remove ${tag.label} tag`}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTagsChange(tags.filter((t) => t.id !== tag.id));
+              }}
+              className="flex size-4 items-center justify-center rounded-full opacity-60 transition-opacity hover:bg-accent-foreground/10 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+            >
+              <X className="size-3" />
+            </button>
+          </span>
+        ),
+      )}
+
+      {active && (
+        <p className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-foreground/80 px-2.5 py-1 text-xs text-background">
+          {active.x === null
+            ? `Click the photo to place ${active.label}`
+            : `Click to move ${active.label}`}
+        </p>
+      )}
+    </div>
+  );
+}
+```
+</TabsContent>
+</JS>
+</Tabs>
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</CodeTabsContent>
+
+</CodeTabs>
+
+## Usage
+
+Tags are yours — the component holds no state beyond which badge is active. A tag with `x: null` is unplaced, and clicking the photo drops the active badge there before moving on to the next unplaced one:
+
+```tsx
+const [tags, setTags] = useState<ImageTag[]>([
+  { id: "circle", label: "Circle", x: null, y: null },
+  { id: "square", label: "Square", x: null, y: null },
+]);
+
+<ImageTagger src={photo} tags={tags} onTagsChange={setTags} />;
+```
+
+Positions are stored as `0`–`1` fractions of the image, so they survive any rendered size — store them next to the photo URL and re-render the same badges in an overlay anywhere else:
+
+```tsx
+<img src={photo} alt="" className="relative" />
+{tags
+  .filter((t) => t.x !== null)
+  .map((t) => (
+    <span
+      key={t.id}
+      className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/70 px-2 py-1 text-xs text-white"
+      style={{ left: `${t.x! * 100}%`, top: `${t.y! * 100}%` }}
+    >
+      {t.label}
+    </span>
+  ))}
+```
+
+## API Reference
+
+<AutoTypeTable path="registry/default/image-tagger/image-tagger.tsx" name="ImageTaggerProps" />
+
+<AutoTypeTable path="registry/default/image-tagger/image-tagger.tsx" name="ImageTag" />

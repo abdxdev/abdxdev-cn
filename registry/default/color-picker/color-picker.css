@@ -1,0 +1,19 @@
+/* react-colorful inside the ColorPicker popover.
+   Two-class selectors so they beat the library's runtime-injected styles. */
+.color-name-picker .react-colorful {
+  width: 100%;
+  height: auto;
+  gap: 0.75rem;
+}
+.color-name-picker .react-colorful__saturation {
+  flex: none;
+  aspect-ratio: 4 / 3;
+  border: 0; /* also clears the library's default 12px black bottom border */
+  border-radius: var(--radius-lg, 0.5rem);
+  box-shadow: none; /* the library's faint inset ring */
+}
+.color-name-picker .react-colorful__hue {
+  height: 0.75rem;
+  border: 0;
+  border-radius: 9999px;
+}

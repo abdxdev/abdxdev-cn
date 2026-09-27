@@ -2,6 +2,8 @@
   "title": "Components",
   "pages": [
     "reveal-highlight",
-    "shake-element"
+    "shake-element",
+    "color-picker",
+    "image-tagger"
   ]
 }
