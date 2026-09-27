@@ -27,7 +27,7 @@ export function ImageTaggerDemo() {
   return (
     <div className="space-y-3 p-8">
       <p className="text-xs text-fd-muted-foreground">
-        Click the photo to drop the active badge, drag one to move it, × to remove.
+        Click the photo to drop the active badge, drag one to move it, × to take one back off.
       </p>
 
       <ImageTagger

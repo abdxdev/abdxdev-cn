@@ -121,8 +121,9 @@ function pointFromEvent(e: { clientX: number; clientY: number }, el: Element) {
 
 /**
  * Marks a point on an image with a labeled badge. Click the photo to move the
- * active badge there, drag a badge to nudge it, × to remove one. Positions are
- * stored as fractions of the image, so they hold at any size.
+ * active badge there, drag a badge to nudge it, × to take one back off (it stays
+ * in `tags`, unplaced, and becomes active again). Positions are stored as
+ * fractions of the image, so they hold at any size.
  *
  * Usually used on one photo that shows several options (a picture with both a
  * circle and a square in it) — the badges tell the customer which is which.
@@ -169,11 +170,15 @@ export function ImageTagger({ src, alt = "", tags, onTagsChange, className = "" 
             <span className="text-xs font-semibold whitespace-nowrap sm:text-sm">{tag.label}</span>
             <button
               type="button"
-              aria-label={`Remove ${tag.label} tag`}
+              aria-label={`Remove ${tag.label} tag from the image`}
               onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => {
                 e.stopPropagation();
-                onTagsChange(tags.filter((t) => t.id !== tag.id));
+                // Take the badge off the image but keep the tag, so it can be
+                // placed again later. Dropping it from `tags` is the caller's
+                // job — the list belongs to them.
+                onTagsChange(tags.map((t) => (t.id === tag.id ? { ...t, x: null, y: null } : t)));
+                setActiveId(tag.id);
               }}
               className="flex size-4 items-center justify-center rounded-full opacity-60 transition-opacity hover:bg-accent-foreground/10 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
             >
@@ -212,8 +217,9 @@ function pointFromEvent(e, el) {
 
 /**
  * Marks a point on an image with a labeled badge. Click the photo to move the
- * active badge there, drag a badge to nudge it, × to remove one. Positions are
- * stored as fractions of the image, so they hold at any size.
+ * active badge there, drag a badge to nudge it, × to take one back off (it stays
+ * in `tags`, unplaced, and becomes active again). Positions are stored as
+ * fractions of the image, so they hold at any size.
  *
  * Usually used on one photo that shows several options (a picture with both a
  * circle and a square in it) — the badges tell the customer which is which.
@@ -259,11 +265,15 @@ export function ImageTagger({ src, alt = "", tags, onTagsChange, className = "" 
             <span className="text-xs font-semibold whitespace-nowrap sm:text-sm">{tag.label}</span>
             <button
               type="button"
-              aria-label={`Remove ${tag.label} tag`}
+              aria-label={`Remove ${tag.label} tag from the image`}
               onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => {
                 e.stopPropagation();
-                onTagsChange(tags.filter((t) => t.id !== tag.id));
+                // Take the badge off the image but keep the tag, so it can be
+                // placed again later. Dropping it from `tags` is the caller's
+                // job — the list belongs to them.
+                onTagsChange(tags.map((t) => (t.id === tag.id ? { ...t, x: null, y: null } : t)));
+                setActiveId(tag.id);
               }}
               className="flex size-4 items-center justify-center rounded-full opacity-60 transition-opacity hover:bg-accent-foreground/10 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
             >
